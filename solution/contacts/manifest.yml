@@ -1,0 +1,7 @@
+applications:
+- name: lsteck-contacts
+  memory: 256M
+  instances: 1
+  disk_quota: 1024M
+  command: contacts
+  buildpack: swift_buildpack

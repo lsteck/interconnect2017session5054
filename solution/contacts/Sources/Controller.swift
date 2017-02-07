@@ -27,9 +27,12 @@ public class Controller {
         
         // load some initial contacts
         do{
-            try addContact(json: JSON(["first": "Alice", "last": "Zebber", "phone": "555.1111"]))
-            try addContact(json: JSON(["first": "Bob", "last": "Yith", "phone": "555.1212"]))
-            try addContact(json: JSON(["first": "Carol", "last": "Xorn", "phone": "555.1313"]))
+            var contact = try addContact(json: JSON(["first": "Alice", "last": "Zebber", "phone": "555.1111"]))
+            Log.info("added contact \(contact)")
+            contact = try addContact(json: JSON(["first": "Bob", "last": "Yith", "phone": "555.1212"]))
+            Log.info("added contact \(contact)")
+            contact = try addContact(json: JSON(["first": "Carol", "last": "Xorn", "phone": "555.1313"]))
+            Log.info("added contact \(contact)")
         } catch {
             Log.error("Error loading default contacts")
         }

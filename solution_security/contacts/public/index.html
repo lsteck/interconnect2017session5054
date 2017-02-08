@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<link rel="stylesheet" href="contacts.css">
+<body>
+
+<script>
+var app = angular.module("myContacts", []);
+app.controller("myCtrl", function($scope, $http) {
+    //call to server to get the current list of contacts
+    $scope.getContacts = function() {
+      $http.get("/contacts")
+        .then(function(response) {
+          $scope.contacts = response.data;
+          console.log($scope.contacts);
+        }, function error(response) {
+          $scope.errortext = "Unable to retrieve contacts list.";
+        });
+    }
+    $scope.getContacts();
+
+    //find a contact in the current list by name
+    $scope.findContact = function (contact) {
+      for (var i = $scope.contacts.length - 1; i >= 0; i--) {
+        if( ($scope.contacts[i].first == contact.first) &&
+           ($scope.contacts[i].last == contact.last)){
+          return i;
+        }
+      }
+      return -1;
+    }
+               
+   //find a contact in the current list by id
+   $scope.findContactByID = function (id) {
+     for (var i = $scope.contacts.length - 1; i >= 0; i--) {
+       if($scope.contacts[i].id == id){
+         return i;
+       }
+     }
+     return -1;
+    }
+               
+    //add a contact to the list
+    $scope.addContact = function () {
+        $scope.errortext = "";
+        if (!$scope.addMe) {return;}
+        if ($scope.findContact($scope.addMe) == -1) {
+          $http.post("/contacts", $scope.addMe).then(function(response) {
+            $scope.contacts.push(response.data);
+            $scope.addMe = {};
+          }, function error(response) {
+            $scope.errortext = "The contact could not be saved on the server.";
+          });
+          
+        } else {
+            $scope.errortext = "The contact is already in your contacts list.";
+        }
+    }
+
+    //delete a contact from the list
+    $scope.removeContact = function (index, id) {
+      $scope.errortext = "";
+      $http.delete("/contact/" + id).then(function(response) {
+        $scope.contacts.splice(index, 1);
+      }, function error(response) {
+        $scope.errortext = "The contact could not be removed from the server.";
+      });
+      
+    }
+
+    //select contact in the list to update
+    $scope.selectContactToUpdate = function (index) {
+      $scope.errortext = "";
+      $scope.addMe = angular.copy($scope.contacts[index]);
+      angular.element(document.querySelector('#addButton')).addClass("button-hide");
+      angular.element(document.querySelector('#updateButton')).removeClass("button-hide");
+    }
+               
+    //update a contact from the list
+    $scope.updateContact = function () {
+      $scope.errortext = "";
+      $http.put("/contact/" + $scope.addMe.id, $scope.addMe).then(function(response) {
+          $scope.contacts[$scope.findContactByID(response.data.id)] = response.data;
+          $scope.reset();
+          }, function error(response) {
+          $scope.errortext = "The contact could not be updated on the server.";
+      });
+    }
+               
+    //cancel add & update of contact
+   $scope.reset = function () {
+     $scope.errortext = "";
+     $scope.addMe = {}
+     angular.element(document.querySelector('#addButton')).removeClass("button-hide");
+     angular.element(document.querySelector('#updateButton')).addClass("button-hide");
+   }
+    
+
+});
+</script>
+
+<div ng-app="myContacts" ng-cloak ng-controller="myCtrl" class="card" style="">
+  <header class="header">
+    <h3>My Contacts</h3>
+  </header>
+  <ul>
+    <li ng-repeat="x in contacts" class="padding-16"><span ng-click="selectContactToUpdate($index)" style="cursor:pointer;">{{x.last}}, {{x.first}}  &nbsp;&nbsp;&nbsp;{{x.phone}}</span><span ng-click="removeContact($index, x.id)" style="cursor:pointer;" class="right margin-right">x</span></li>
+  </ul>
+  <div class="header">
+    <div class="row">
+      <div class="col small">First:</div>
+      <div class="col large">
+        <input placeholder="First name" ng-model="addMe.first" class="input">
+      </div>
+      <div class="col small">Last:</div>
+      <div class="col large">
+        <input placeholder="Last name" ng-model="addMe.last" class="input">
+      </div>
+      <div class="col small">Phone:</div>
+      <div class="col large">
+        <input placeholder="Phone number" ng-model="addMe.phone" class="input">
+      </div>
+      <div class="col large right">
+        <button id="addButton" ng-click="addContact()" class="button">Add</button>
+        <button id="updateButton" ng-click="updateContact()" class="button button-hide">Update</button>
+        <button ng-click="reset()" class="button">Cancel</button>
+      </div>
+    </div>
+    <p class="padding-left red-text">{{errortext}}</p>
+  </div>
+</div>
+
+</body>
+</html>
+

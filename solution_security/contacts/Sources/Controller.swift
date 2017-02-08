@@ -44,14 +44,14 @@ public class Controller {
     
     func setUpSecurity(kituraRouter: Router){
         let credentials = Credentials()
-        let users = ["Tom" : "12345", "Jane" : "p@ssw0rd"]
+        let users = ["Tom" : "12345", "Jane" : "p@ssw0rd", "localuser" : "passw0rd"]
         let basicAuthCredentials = CredentialsHTTPBasic(verifyPassword: { userId, password, callback in
             if let storedPassword = users[userId] {
                 if (storedPassword == password) {
                     callback(UserProfile(id: userId, displayName: userId, provider: "HTTPBasic"))
                 }
             }
-            // else if userId or password doesnt match
+            // else if userId or password does not match
             callback(nil)
         }, realm: "Users")
         

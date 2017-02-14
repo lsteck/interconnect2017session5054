@@ -1,11 +1,3 @@
-//
-//  Contact.swift
-//  contacts
-//
-//  Created by Larry Steck on 2/1/17.
-//
-//
-
 import Foundation
 import SwiftyJSON
 

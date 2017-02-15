@@ -1,0 +1,2 @@
+var appEnv = try CloudFoundryEnv.getAppEnv()
+var port = appEnv.port

@@ -1,0 +1,7 @@
+applications:
+- name: <your-unique-name>
+  memory: 256M
+  instances: 1
+  disk_quota: 1024M
+  command: contacts
+  buildpack: swift_buildpack

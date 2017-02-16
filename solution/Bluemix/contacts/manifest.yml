@@ -1,5 +1,5 @@
 applications:
-- name: lsteck-contacts
+- name: <your-unique-name>-contacts
   memory: 256M
   instances: 1
   disk_quota: 1024M

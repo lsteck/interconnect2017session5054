@@ -1,0 +1,20 @@
+    func setUpSecurity(kituraRouter: Router){
+        let credentials = Credentials()
+        let users = ["Tom" : "12345", "Jane" : "p@ssw0rd", "localuser" : "passw0rd"]
+        let basicAuthCredentials = CredentialsHTTPBasic(verifyPassword: { userId, password, callback in
+            if let storedPassword = users[userId] {
+                if (storedPassword == password) {
+                    callback(UserProfile(id: userId, displayName: userId, provider: "HTTPBasic"))
+                }
+            }
+            // else if userId or password does not match
+            callback(nil)
+        }, realm: "Users")
+        
+        
+        credentials.register(plugin: basicAuthCredentials)
+        // We allow read only but for add update and delete require signon
+        router.post("/contacts", middleware: credentials)
+        router.all("/contact", middleware: credentials)
+    }
+    

@@ -1,0 +1,1 @@
+setUpSecurity(kituraRouter: router)

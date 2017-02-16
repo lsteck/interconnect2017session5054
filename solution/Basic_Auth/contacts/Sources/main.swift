@@ -1,7 +1,6 @@
 import Kitura
 import LoggerAPI
 import HeliumLogger
-import CloudFoundryEnv
 
 // Initialize HeliumLogger
 HeliumLogger.use()
@@ -11,16 +10,18 @@ let router = Router()
 
 router.all("/static", middleware: StaticFileServer())
 
-let controller = Controller(kituraRouter: router)
-do{
-    var appEnv = try CloudFoundryEnv.getAppEnv()
-    var port = appEnv.port
 
-    // Add an HTTP server and connect it to the router
-    Kitura.addHTTPServer(onPort: port, with: router)
-    // Start the Kitura runloop (this call never returns)
-    Kitura.run()
-} catch let error {
-    Log.error(error.localizedDescription)
-    Log.error("Kitura Server did not start!")
+// Handle HTTP GET requests to /
+router.get("/") {
+    request, response, next in
+    response.send("Hello, World!")
+    next()
 }
+
+let controller = Controller(kituraRouter: router)
+
+// Add an HTTP server and connect it to the router
+Kitura.addHTTPServer(onPort: 8090, with: router)
+
+// Start the Kitura runloop (this call never returns)
+Kitura.run()
